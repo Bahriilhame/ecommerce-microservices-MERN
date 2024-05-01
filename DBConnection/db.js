@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const connectDB = async (username,password,dbName) => {
   try {
-    const url = `mongodb+srv://${username}:${password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${dbName}?authSource=admin&compressors=zlib&retryWrites=true&w=majority&ssl=true`;
+    const url = `mongodb+srv://${username}:${password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${dbName}`;
     await mongoose.connect(url);
     console.log(process.env.db_username);
 
