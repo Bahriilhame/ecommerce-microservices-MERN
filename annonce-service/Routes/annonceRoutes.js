@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const annonceController = require('../Controllers/AnnonceController');
-const authMiddleware = require('../../auth-service/authMiddleware');
+const authMiddleware = require('../../auth-service/Middlewares/authMiddleware');
 
 // get all annonces
 router.get('/', annonceController.getAllAnnonces);
