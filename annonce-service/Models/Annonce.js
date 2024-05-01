@@ -19,7 +19,7 @@ const annonceSchema = new mongoose.Schema({
   },
   date_time: {
     type: Date,
-    required: true
+    default: Date.now
   },
   adresse: {
     type: String,
@@ -36,6 +36,6 @@ const annonceSchema = new mongoose.Schema({
   }
 });
 
-const Annonce = mongoose.model('Annonce', annonceSchema);
+const Annonce = mongoose.model('Annonce', annonceSchema,"annonces");
 
 module.exports = Annonce;
