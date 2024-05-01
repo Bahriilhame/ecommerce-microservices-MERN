@@ -2,6 +2,7 @@ const express = require('express');
 // const connectDB = require('../DBConnection/db');
 require('dotenv').config();
 const authRoutes = require('./Routes/authRoutes');
+const apiRoutes = require('./Routes/apiRoutes');
 
 const app = express();
 
@@ -11,6 +12,7 @@ const app = express();
 app.use(express.json());
 
 app.use('/auth', authRoutes);
+app.use('/api', apiRoutes);
 
 const PORT = 8002;
 app.listen(PORT, () => {
