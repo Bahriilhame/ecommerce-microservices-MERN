@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const annonceSchema = new mongoose.Schema({
+  id_vendeur: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
   title: {
     type: String,
     required: true
