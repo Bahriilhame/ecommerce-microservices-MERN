@@ -3,8 +3,12 @@ const express = require('express');
 require('dotenv').config();
 const categorieRoutes = require('./Routes/categorieRoutes');
 const annonceRoutes = require('./Routes/annonceRoutes');
+const cors = require('cors');
 
 const app = express();
+
+// Allow requests from all origins
+app.use(cors());
 
 // Connect to MongoDB Atlas
 // connectDB(process.env.db_username,process.env.db_password,process.env.db_name)
