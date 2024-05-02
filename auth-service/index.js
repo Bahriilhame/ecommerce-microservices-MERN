@@ -3,6 +3,7 @@ const express = require('express');
 require('dotenv').config();
 const authRoutes = require('./Routes/authRoutes');
 const apiRoutes = require('./Routes/apiRoutes');
+const cors = require('cors');
 
 const app = express();
 
@@ -10,6 +11,9 @@ const app = express();
 // connectDB(process.env.db_username,process.env.db_password,process.env.db_name)
 
 app.use(express.json());
+
+// Allow requests from all origins
+app.use(cors());
 
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
