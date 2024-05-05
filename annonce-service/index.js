@@ -6,6 +6,7 @@ const annonceRoutes = require('./Routes/annonceRoutes');
 const cors = require('cors');
 
 const app = express();
+app.use('/uploads', express.static('uploads'));
 
 // Allow requests from all origins
 app.use(cors());

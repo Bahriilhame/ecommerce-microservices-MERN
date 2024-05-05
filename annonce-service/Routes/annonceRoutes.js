@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const annonceController = require('../Controllers/AnnonceController');
 const authMiddleware = require('../../auth-service/Middlewares/authMiddleware');
+const upload=require('../Middlewares/ImageUpload')
 
 // get all annonces
 router.get('/', annonceController.getAllAnnonces);
 
 // create a new annonce
-router.post('/create', authMiddleware,annonceController.createAnnonce);
+router.post('/create', authMiddleware,upload.single('image'),annonceController.createAnnonce);
 
 // get an annonce by ID
 router.get('/:id' ,annonceController.getAnnonceById);

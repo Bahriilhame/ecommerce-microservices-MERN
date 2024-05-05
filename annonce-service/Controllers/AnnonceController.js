@@ -13,9 +13,24 @@ exports.createAnnonce = async (req, res) => {
       socketTimeoutMS: 45000
     });
 
-      const newAnnonce = new Annonce(req.body);
-      newAnnonce.id_vendeur = req.user._id;
-      console.log(req.user);
+        const image = req.file;
+        if (!image) {
+          return res.status(400).json({ error: 'Image file is required' });
+        }
+
+      const newAnnonce = new Annonce({
+        id_vendeur: req.user._id,
+        title: req.body.title,
+        description: req.body.description,
+        price: req.body.price,
+        quantity: req.body.quantity,
+        adresse: req.body.adresse,
+        status: req.body.status,
+        id_categorie: req.body.id_categorie,
+        image_name: req.file.filename,
+        image_path: req.file.path
+      });
+
       await newAnnonce.save();
       res.status(201).json({ message: 'Annonce created successfully', newAnnonce });
   } catch (error) {
@@ -53,7 +68,7 @@ exports.getAnnonceById = async (req, res) => {
       socketTimeoutMS: 45000
     });
 
-    const annonce = await Annonce.findById(req.params.id);
+    const annonce = await Annonce.findById(req.params.id).populate('id_categorie');;
     if (!annonce) {
       return res.status(404).json({ message: 'Annonce not found' });
     }

@@ -37,6 +37,14 @@ const annonceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Categorie',
     required: true
+  },
+  image_name: {
+    type: String,
+    required: true,
+  },
+  image_path: {
+    type: String,
+    required: true,
   }
 });
 
