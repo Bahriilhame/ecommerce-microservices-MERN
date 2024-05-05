@@ -34,7 +34,8 @@ exports.getAllAnnonces = async (req, res) => {
       socketTimeoutMS: 45000
     });
 
-    const annonces = await Annonce.find();
+    // Récupérer toutes les annonces avec leur catégorie associée
+    const annonces = await Annonce.find().populate('id_categorie');
     res.status(200).json(annonces);
   } catch (error) {
     res.status(500).json({ error: error.message });
