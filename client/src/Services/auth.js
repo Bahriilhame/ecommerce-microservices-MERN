@@ -30,21 +30,26 @@ const authAPI = {
     const response = await axios.get(`${API_URL_annonce}/annonces`);
     console.log(response);
     return response;
-},
+  },
 
-getAnnonceByID: async (id) => {
-  const response = await axios.get(`${API_URL_annonce}/annonces/${id}`);
-  console.log(response);
-  return response;
-},
-
-  createAnnonce: async (data) => {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(`${API_URL_annonce}/annonces/create`,data,{
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  getAnnonceByID: async (id) => {
+    const response = await axios.get(`${API_URL_annonce}/annonces/${id}`);
     console.log(response);
     return response;
+  },
+
+  createAnnonce: async (formData) => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+    try {
+      const response = await axios.post(`${API_URL_annonce}/annonces/create`, formData, config);
+      return response;
+    } catch (error) {
+      console.error('Error creating annonce:', error);
+      throw error;
+    }
   },
 
   updateUserProfile: async (formData) => {
@@ -53,7 +58,45 @@ getAnnonceByID: async (id) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       return response;
-  }
+  },
+
+  getAllCategories: async () => {
+    try {
+      const response = await axios.get(`${API_URL_annonce}/categories`);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des catégories:', error);
+      throw error;
+    }
+  },
+
+  addToCart: async (itemId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      const response = await axios.post(`${API_URL_annonce}/cart/add`, { itemId }, config);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout au panier:', error);
+      throw error;
+    }
+  },
+
+  addToWishlist: async (itemId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      const response = await axios.post(`${API_URL_annonce}/wishlist/add`, { itemId }, config);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout à la liste de souhaits:', error);
+      throw error;
+    }
+  },
 };
 
 export default authAPI;
