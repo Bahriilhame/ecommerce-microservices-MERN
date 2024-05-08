@@ -3,8 +3,10 @@ const bodyParser = require('body-parser');
 const cartRoutes = require('./Routes/CartRoutes');
 const dotenv = require('dotenv');
 const app = express();
+const cors = require('cors');
 dotenv.config()
 
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use('/api/cart', cartRoutes);

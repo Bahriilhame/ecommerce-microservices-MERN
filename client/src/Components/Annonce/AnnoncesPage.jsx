@@ -10,6 +10,7 @@ import authAPI from '../../Services/auth';
 const AnnoncesPage = () => {
   const [annonces, setAnnonces] = useState([]);
   const slidersRef = useRef({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAnnonces = async () => {
@@ -23,7 +24,6 @@ const AnnoncesPage = () => {
     fetchAnnonces();
   }, []);
 
-  // Organiser les annonces par catégorie
   const annoncesParCategorie = annonces.reduce((acc, annonce) => {
     const categorie = annonce.id_categorie.name;
     if (!acc[categorie]) {
@@ -70,6 +70,20 @@ const AnnoncesPage = () => {
     slidersRef.current[categorie].slickPrev();
   };
 
+  const addToCart = async (event,annonceId) => {
+    event.preventDefault();
+    console.log("stopped");
+    setLoading(true);
+    try {
+      await authAPI.addToCart(annonceId, 1);
+      alert('Annonce ajoutée au panier avec succès !');
+    } catch (error) {
+      console.error(error.response.data);
+      alert('Une erreur s\'est produite lors de l\'ajout au panier.');
+    }
+    setLoading(false);
+  };
+
   return (
     <div className='mt-36 mx-auto w-full max-w-screen-lg'>
       {Object.entries(annoncesParCategorie).map(([categorie, annoncesCategorie], index, categories) => (
@@ -89,8 +103,9 @@ const AnnoncesPage = () => {
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-lg">${annonce.price}</span>
                         {/* <button className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded">Add to Cart</button> */}
-                        <button className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded flex items-center">
-                          <ShoppingCartIcon className="h-5 w-5 mr-1" /> Add to Cart
+                        <button onClick={(e)=>addToCart(e,annonce._id)} disabled={loading} className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                          <ShoppingCartIcon className="h-5 w-5 mr-1" /> 
+                          {loading ? 'Loading...' : `Add to cart`}
                         </button>
                       </div>
                     </div>

@@ -5,6 +5,7 @@ import axios from 'axios';
 const API_URL_auth = 'http://localhost:8002/auth';
 const API_URL_profile = 'http://localhost:8003/api';
 const API_URL_annonce = 'http://localhost:8001';
+const API_URL_cart = 'http://localhost:8004/api';
 
 
 const authAPI = {
@@ -70,16 +71,31 @@ const authAPI = {
     }
   },
 
-  addToCart: async (itemId) => {
+  addToCart: async (annonceId,quantity) => {
     try {
       const token = localStorage.getItem('token');
       const config = {
         headers: { Authorization: `Bearer ${token}` }
       };
-      const response = await axios.post(`${API_URL_annonce}/cart/add`, { itemId }, config);
+      const response = await axios.post(`${API_URL_cart}/cart/add`, { annonceId,quantity }, config);
       return response.data;
     } catch (error) {
       console.error('Erreur lors de l\'ajout au panier:', error);
+      throw error;
+    }
+  },
+
+  async getCart() {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      const response = await axios.get(`${API_URL_cart}/cart`, config);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching cart:', error);
       throw error;
     }
   },
