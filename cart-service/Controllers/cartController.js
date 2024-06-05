@@ -29,7 +29,7 @@ exports.addToCart = async (req, res) => {
       } else {
         const existingAdIndex = cart.annonces.findIndex(ad => ad.annonce._id === annonceId);
         if (existingAdIndex !== -1) {
-          cart.annonces[existingAdIndex].quantity += quantity;
+          cart.annonces[existingAdIndex].quantity += Number(quantity);
         } else {
           cart.annonces.push({ annonce: adDetails, quantity });
         }
