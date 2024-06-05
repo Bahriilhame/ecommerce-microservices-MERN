@@ -113,6 +113,20 @@ const authAPI = {
       throw error;
     }
   },
+
+  removeFromCart: async (annonceId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+      const response = await axios.post(`${API_URL_cart}/cart/remove`, { annonceId }, config);
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la suppression de l\'article du panier:', error);
+      throw error;
+    }
+  },
 };
 
 export default authAPI;

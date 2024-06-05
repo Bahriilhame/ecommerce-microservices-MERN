@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import authAPI from '../../Services/auth';
+import { Link } from 'react-router-dom';
 
 const Cart = ({ setIsCartOpen, setCart, cart }) => {
   const [loading, setLoading] = useState(false);
@@ -29,20 +30,48 @@ const Cart = ({ setIsCartOpen, setCart, cart }) => {
     }
   }, [cart]);
 
+  const handleRemove = async (annonceId) => {
+    try {
+      await authAPI.removeFromCart(annonceId);
+      const updatedCart = cart.annonces.filter(item => item.annonce._id !== annonceId);
+      setCart({ ...cart, annonces: updatedCart });
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
   if (!cart || cart.annonces.length === 0) {
-    return <div>Cart is empty.</div>;
+    return (
+      <div className="fixed inset-0 z-40 bg-black bg-opacity-50 flex items-center justify-center" onClick={() => setIsCartOpen(false)}>
+        <div className="bg-white max-w-md w-full h-1/6 overflow-auto mx-4 rounded-md shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div className="px-6 py-4">
+            <div className="flex justify-between">
+              <h2 className="text-lg font-semibold">Shopping Cart</h2>
+              <button className="flex justify-end text-gray-500 hover:text-gray-700 focus:outline-none" onClick={() => setIsCartOpen(false)}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className='flex justify-between'>
+              <h4 className='mt-3'>Cart is empty! <Link to='/'><button className='bg-green-400 r-0 px-2 py-1 rounded-sm hover:bg-green-500 ml-56' onClick={() => setIsCartOpen(false)}>Shop</button></Link></h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="fixed inset-0 z-40 bg-black bg-opacity-50 flex items-center justify-center" onClick={() => setIsCartOpen(false)}>
-      <div className="bg-white max-w-md w-full h-4/6 overflow-auto mx-4 rounded-md shadow-lg" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white max-w-md w-full h-4/6 overflow-auto mx-4 rounded-md shadow-lg sm:h-3/6 md:h-1/2" onClick={(e) => e.stopPropagation()}>
         <div className="px-6 py-4">
           <div className="flex justify-between">
-          <h2 className="text-lg font-semibold">Shopping Cart</h2>
+            <h2 className="text-lg font-semibold">Shopping Cart</h2>
             <button className="flex justify-end text-gray-500 hover:text-gray-700 focus:outline-none" onClick={() => setIsCartOpen(false)}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -60,7 +89,7 @@ const Cart = ({ setIsCartOpen, setCart, cart }) => {
                     <p className="text-gray-600">Quantity: {item.quantity}</p>
                   </div>
                 </div>
-                <button className="text-red-500 hover:text-red-600 focus:outline-none">
+                <button className="text-red-500 hover:text-red-600 focus:outline-none" onClick={() => handleRemove(item.annonce._id)}>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>

@@ -8,5 +8,5 @@ router.post('/add', verifyToken ,cartController.addToCart);
 
 // Get the cart of the user
 router.get('/',verifyToken ,cartController.getCart);
-
+router.post('/remove',verifyToken, cartController.removeFromCart);
 module.exports = router;

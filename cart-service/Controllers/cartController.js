@@ -67,3 +67,32 @@ exports.addToCart = async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   };
+
+  exports.removeFromCart = async (req, res) => {
+    try {
+        const url = `mongodb+srv://${process.env.db_username}:${process.env.db_password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${process.env.db_name}`;
+        await mongoose.connect(url, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            connectTimeoutMS: 30000,
+            socketTimeoutMS: 45000
+        });
+
+        const userId = req.userId;
+        const { annonceId } = req.body;
+
+        let cart = await Cart.findOne({ userId });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        cart.annonces = cart.annonces.filter(item => item.annonce._id !== annonceId);
+
+        await cart.save();
+        res.status(200).json({ message: 'Annonce removed from cart successfully', cart });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
