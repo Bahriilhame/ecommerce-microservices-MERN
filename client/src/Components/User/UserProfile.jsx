@@ -15,6 +15,8 @@ const UserProfile = () => {
   });
   const [userId, setUserId] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [showProfileSettings, setShowProfileSettings] = useState(true);
+  const [showOrdersList, setShowOrdersList] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -84,8 +86,8 @@ const UserProfile = () => {
 
   return (
     <div className="container mt-[60px] sm:mt-[120px] ">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white shadow-lg p-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white shadow-lg p-4 col-span-1">
           {userProfile && (
             <div className="flex items-center">
               <div className="mr-4">
@@ -99,14 +101,15 @@ const UserProfile = () => {
           )}
           <div className="mt-2 flex flex-row lg:flex-col lg:justify-between">
             <div className="flex items-center border-b border-gray-200 py-2">
-              <button className="text-lg font-semibold py-2 mr-4 text-gray-500 border-b-2 border-gray-500">Profile Settings</button>
+              <button className="text-lg font-semibold py-2 mr-4 text-gray-500 border-b-2 border-gray-500" onClick={() => { setShowProfileSettings(true); setShowOrdersList(false); }}>Profile Settings</button>
             </div>
             <div className="flex items-center border-b border-gray-200 py-2">
-              <button className="text-lg font-semibold py-2 mr-4 text-gray-500 border-b-2 border-gray-500">Orders List <span className="bg-red-500 text-white rounded-full px-2 ml-2">3</span></button>
+              <button className="text-lg font-semibold py-2 mr-4 text-gray-500 border-b-2 border-gray-500" onClick={() => { setShowOrdersList(true); setShowProfileSettings(false); }}>Orders List <span className="bg-red-500 text-white rounded-full px-2 ml-2">{orders.length}</span></button>
             </div>
           </div>
         </div>
-        <div className="bg-white shadow-lg p-4">
+        <div className="bg-white shadow-lg p-4 col-span-2">
+        {showProfileSettings &&
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="flex flex-col">
               <label htmlFor="lname" className="text-lg font-semibold">Last Name</label>
@@ -189,40 +192,46 @@ const UserProfile = () => {
             </div>
             <button type="submit" className="w-full bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-600">Update Profile</button>
           </form>
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Orders List</h2>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => (
-                <tr key={order._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <ul className="text-center">
-                      {order.products.map((product) => (
-                        <div key={product._id} className='flex m-4 items-center'>
-                          <img src={`http://localhost:8001/uploads/${product.image_name}`} alt="product" className="w-16 h-16 object-cover rounded-md mr-4"/>
-                          <p className='text-gray-600 w-30 ml-3' > {/* Ajout de w-40 pour définir une largeur fixe */}
-                            {product.name} 
-                          </p>
-                        </div>
-                      ))}
-                    </ul>
-                  </td>
-
-                  <td className="px-6 py-4 whitespace-nowrap">{formatDate(order.createdAt)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{order.total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          }
+        {showOrdersList && 
+            <div className="mt-8">
+              <h2 className="text-xl font-semibold mb-4">Orders List</h2>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {orders.map((order) => (
+                      <tr key={order._id} className="hover:bg-gray-50">
+                        <td className="md:px-6 md:py-4 whitespace-nowrap text-center">
+                          <ul className="text-center">
+                            {order.products.map((product) => (
+                              <div key={product._id} className='flex m-4 items-center'>
+                                <img src={`http://localhost:8001/uploads/${product.image_name}`} alt="product" className="w-12 h-12 object-cover rounded-md mr-2 lg:mr-4"/>
+                                <p className='text-gray-600 w-full lg:w-auto ml-2 lg:ml-3 overflow-auto'>
+                                  {product.name} 
+                                </p>
+                              </div>
+                            ))}
+                          </ul>
+                        </td>
+                        <td className="md:px-6 md:py-4 whitespace-nowrap">{formatDate(order.createdAt)}</td>
+                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                          {order.total}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
         </div>
-       </div>
       </div>
     </div>
   );
