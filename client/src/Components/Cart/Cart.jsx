@@ -67,6 +67,7 @@ const Cart = ({ setIsCartOpen, setCart, cart }) => {
           id_seller: item.id_seller,
           name: item.annonce.title,
           price: item.annonce.price,
+          image_name: item.annonce.image_name,
         })),
         total: totalPrice,
       };

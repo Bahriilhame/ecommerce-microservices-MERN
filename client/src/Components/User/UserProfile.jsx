@@ -13,6 +13,8 @@ const UserProfile = () => {
     password: '',
     confirmPassword: ''
   });
+  const [userId, setUserId] = useState(null);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -28,6 +30,7 @@ const UserProfile = () => {
           password: '',
           confirmPassword: ''
         });
+        setUserId(response.data._id);
       } catch (error) {
         console.error(error.response.data);
       }
@@ -35,6 +38,21 @@ const UserProfile = () => {
 
     fetchUserProfile();
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      const fetchOrders = async () => {
+        try {
+          const ordersResponse = await authAPI.getOrders(userId);
+          setOrders(ordersResponse.orders);
+        } catch (error) {
+          console.error(error.response.data);
+        }
+      };
+
+      fetchOrders();
+    }
+  }, [userId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -171,7 +189,40 @@ const UserProfile = () => {
             </div>
             <button type="submit" className="w-full bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-600">Update Profile</button>
           </form>
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Orders List</h2>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Price</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {orders.map((order) => (
+                <tr key={order._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <ul className="text-center">
+                      {order.products.map((product) => (
+                        <div key={product._id} className='flex m-4 items-center'>
+                          <img src={`http://localhost:8001/uploads/${product.image_name}`} alt="product" className="w-16 h-16 object-cover rounded-md mr-4"/>
+                          <p className='text-gray-600 w-30 ml-3' > {/* Ajout de w-40 pour définir une largeur fixe */}
+                            {product.name} 
+                          </p>
+                        </div>
+                      ))}
+                    </ul>
+                  </td>
+
+                  <td className="px-6 py-4 whitespace-nowrap">{formatDate(order.createdAt)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{order.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+       </div>
       </div>
     </div>
   );

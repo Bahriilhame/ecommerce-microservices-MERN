@@ -172,6 +172,13 @@ const authAPI = {
     }
   },
   
+  getOrders: async (userId) => {
+    return axios.get(`${API_URL_order}/orders/${userId}`)
+      .then(response => response.data)
+      .catch(error => {
+        throw error;
+      });
+  }
 };
 
 export default authAPI;

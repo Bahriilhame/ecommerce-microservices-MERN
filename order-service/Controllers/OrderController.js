@@ -33,6 +33,26 @@ const createOrder = async (req, res) => {
   }
 };
 
+const getUserOrders = async (req, res) => {
+  try {
+    const url = `mongodb+srv://${process.env.db_username}:${process.env.db_password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${process.env.db_name}`;
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000
+    });
+
+    const userId = req.params.userId; // Récupérer userId à partir des paramètres de la requête
+    const userOrders = await Order.find({ id_buyer: userId }); // Trouver toutes les commandes de l'utilisateur
+    res.status(200).json({ orders: userOrders }); // Renvoyer les commandes au format JSON
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createOrder,
+  getUserOrders
 };
