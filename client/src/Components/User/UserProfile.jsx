@@ -74,6 +74,9 @@ const UserProfile = () => {
       console.log(response.data);
       setUserProfile(response.data);
       setShowNotif(true);
+      setTimeout(()=>{
+        window.location.reload();
+      }, 3000);
     } catch (error) {
       console.error(error.response.data);
       alert('Failed to update profile');
@@ -99,7 +102,7 @@ const UserProfile = () => {
               </div>
               <div>
                 <h5 className="text-xl font-semibold mb-2">{userProfile.lname} {userProfile.fname}</h5>
-                <p className="text-sm text-gray-600">Joined {formatDate(userProfile.createdAt)}</p>
+                <p className="text-sm text-gray-600">Joined on {formatDate(userProfile.createdAt)}</p>
               </div>
             </div>
           )}

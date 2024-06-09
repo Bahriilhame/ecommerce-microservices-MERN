@@ -58,6 +58,7 @@ const authAPI = {
       const response = await axios.put(`${API_URL_profile}/profile/update`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      localStorage.setItem('user', JSON.stringify(response.data.user));
       return response;
   },
 
