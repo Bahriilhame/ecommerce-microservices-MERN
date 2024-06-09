@@ -7,7 +7,6 @@ const Cart = ({ setIsCartOpen, setCart, cart }) => {
   const [loading, setLoading] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
-
   useEffect(() => {
     const fetchCart = async () => {
       setLoading(true);
