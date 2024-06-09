@@ -11,10 +11,10 @@ const OrderSchema = new Schema({
       price: { type: Number, required: true },
       image_name: {type: String,required: true },
       quantity: { type: Number, required: true },
+      status: { type: String, enum: ['pending', 'completed', 'canceled'], default: 'pending' }
     }
   ],
   total: { type: Number, required: true },
-  status: { type: String, enum: ['pending', 'completed', 'canceled'], default: 'pending' }
 }, 
 { 
     timestamps: true 

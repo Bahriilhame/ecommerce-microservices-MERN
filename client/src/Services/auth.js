@@ -188,6 +188,21 @@ const authAPI = {
       throw error;
     });
   },
+
+  updateProductStatus: async (orderId, productId, status, id_buyer) => {
+    try {
+      const response = await axios.put(`${API_URL_order}/orders/update-status`, {
+        orderId,
+        productId,
+        status,
+        id_buyer
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating product status:', error);
+      throw error;
+    }
+  },
 };
 
 export default authAPI;

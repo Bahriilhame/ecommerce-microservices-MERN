@@ -81,6 +81,7 @@ const getOrdersBySeller = async (req, res) => {
             id_buyer: order.id_buyer,
             buyerInfo: buyerInfo.data,
             createdAt: order.createdAt,
+            order_id: order._id,
             updatedAt: order.updatedAt
           };
         } catch (error) {
@@ -97,8 +98,41 @@ const getOrdersBySeller = async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
+
+const updateProductStatus = async (req, res) => {
+  try {
+    const { orderId, productId, status, id_buyer } = req.body;
+
+    const url = `mongodb+srv://${process.env.db_username}:${process.env.db_password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${process.env.db_name}`;
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000
+    });
+
+    const order = await Order.findById(orderId);
+    console.log("order : ", order);
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // Find the index of the product matching both productId and orderId
+    const productIndex = order.products.findIndex(product => product._id.toString() === productId && order._id.toString() === orderId);
+    if (productIndex === -1) return res.status(404).json({ message: 'Product not found in the order' });
+
+    // Update the product status
+    order.products[productIndex].status = status;
+    await order.save();
+
+    res.status(200).json({ message: 'Product status updated successfully' });
+  } catch (error) {
+    console.error('Error updating product status:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
 module.exports = {
   createOrder,
   getUserOrders,
-  getOrdersBySeller
+  getOrdersBySeller,
+  updateProductStatus
 };
