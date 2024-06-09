@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import authAPI from '../../Services/auth';
 import { UserCircleIcon } from '@heroicons/react/solid';
 import Toast from '../../Services/Toast';
+import SellerOrdersList from '../Order/SellerOrdersList';
 
 const UserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -18,7 +19,8 @@ const UserProfile = () => {
   const [orders, setOrders] = useState([]);
   const [showProfileSettings, setShowProfileSettings] = useState(true);
   const [showOrdersList, setShowOrdersList] = useState(false);
-  const [showNotif,setShowNotif]=useState(false);
+  const [showNotif, setShowNotif] = useState(false);
+  const [showSellerOrdersList, setShowSellerOrdersList] = useState(false);
 
   useEffect(() => {
     document.title = "User Profile";
@@ -36,6 +38,13 @@ const UserProfile = () => {
           confirmPassword: ''
         });
         setUserId(response.data._id);
+
+        // if (response.data.role === 'vendeur') {
+        //   setShowOrdersList(false);
+        //   setShowSellerOrdersList(true);
+        // } else {
+        //   setShowSellerOrdersList(false);
+        // }
       } catch (error) {
         console.error(error.response.data);
       }
@@ -74,7 +83,7 @@ const UserProfile = () => {
       console.log(response.data);
       setUserProfile(response.data);
       setShowNotif(true);
-      setTimeout(()=>{
+      setTimeout(() => {
         window.location.reload();
       }, 3000);
     } catch (error) {
@@ -92,7 +101,7 @@ const UserProfile = () => {
 
   return (
     <div className="container mt-[60px] sm:mt-[120px] mx-auto w-full max-w-screen-lg">
-      {showNotif && <Toast message='Updated successfuly'/>}
+      {showNotif && <Toast message='Updated successfully' />}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white shadow-lg p-4 col-span-1">
           {userProfile && (
@@ -108,99 +117,104 @@ const UserProfile = () => {
           )}
           <div className="mt-2 flex flex-row lg:flex-col lg:justify-between">
             <div className="flex items-center border-b border-gray-200 py-2">
-              <button className="text-lg font-semibold py-2 mr-4 text-gray-500 border-b-2 border-gray-500" onClick={() => { setShowProfileSettings(true); setShowOrdersList(false); }}>Profile Settings</button>
+              <button className={`text-lg font-semibold py-2 mr-4 ${showProfileSettings ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowProfileSettings(true); setShowOrdersList(false); setShowSellerOrdersList(false); }}>Profile Settings</button>
             </div>
             <div className="flex items-center border-b border-gray-200 py-2">
-              <button className="text-lg font-semibold py-2 mr-4 text-gray-500 border-b-2 border-gray-500" onClick={() => { setShowOrdersList(true); setShowProfileSettings(false); }}>Orders List <span className="bg-red-500 text-white rounded-full px-2 ml-2">{orders.length}</span></button>
+              <button className={`text-lg font-semibold py-2 mr-4 ${showOrdersList ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowOrdersList(true); setShowProfileSettings(false); setShowSellerOrdersList(false); }}>Orders List <span className="bg-red-500 text-white rounded-full px-2 ml-2">{orders.length}</span></button>
             </div>
+            {userProfile && userProfile.role === 'vendeur' && (
+              <div className="flex items-center border-b border-gray-200 py-2">
+                <button className={`text-lg font-semibold py-2 mr-4 ${showSellerOrdersList ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowSellerOrdersList(true); setShowProfileSettings(false); setShowOrdersList(false); }}>Seller Orders</button>
+              </div>
+            )}
           </div>
         </div>
         <div className="bg-white shadow-lg p-4 col-span-2">
-        {showProfileSettings &&
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="flex flex-col">
-              <label htmlFor="lname" className="text-lg font-semibold">Last Name</label>
-              <input
-                type="text"
-                id="lname"
-                name="lname"
-                value={formData.lname}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="fname" className="text-lg font-semibold">First Name</label>
-              <input
-                type="text"
-                id="fname"
-                name="fname"
-                value={formData.fname}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="email" className="text-lg font-semibold">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="phone" className="text-lg font-semibold">Phone</label>
-              <input
-                type="text"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="role" className="text-lg font-semibold">Role</label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="acheteur">acheteur</option>
-                <option value="vendeur">vendeur</option>
-              </select>
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="password" className="text-lg font-semibold">New Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="confirmPassword" className="text-lg font-semibold">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="px-4 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <button type="submit" className="w-full bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-600">Update Profile</button>
-          </form>
-          }
-        {showOrdersList && 
+          {showProfileSettings && (
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="flex flex-col">
+                <label htmlFor="lname" className="text-lg font-semibold">Last Name</label>
+                <input
+                  type="text"
+                  id="lname"
+                  name="lname"
+                  value={formData.lname}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="fname" className="text-lg font-semibold">First Name</label>
+                <input
+                  type="text"
+                  id="fname"
+                  name="fname"
+                  value={formData.fname}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="email" className="text-lg font-semibold">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="phone" className="text-lg font-semibold">Phone</label>
+                <input
+                  type="text"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="role" className="text-lg font-semibold">Role</label>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="acheteur">acheteur</option>
+                  <option value="vendeur">vendeur</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="password" className="text-lg font-semibold">New Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="confirmPassword" className="text-lg font-semibold">Confirm Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="px-4 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <button type="submit" className="w-full bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-600">Update Profile</button>
+            </form>
+          )}
+          {showOrdersList && (
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Orders List</h2>
               <div className="overflow-x-auto">
@@ -219,9 +233,9 @@ const UserProfile = () => {
                           <ul className="text-center">
                             {order.products.map((product) => (
                               <div key={product._id} className='flex m-4 items-center'>
-                                <img src={`http://localhost:8001/uploads/${product.image_name}`} alt="product" className="w-12 h-12 object-cover rounded-md mr-2 lg:mr-4"/>
+                                <img src={`http://localhost:8001/uploads/${product.image_name}`} alt="product" className="w-12 h-12 object-cover rounded-md mr-2 lg:mr-4" />
                                 <p className='text-gray-600 w-full lg:w-auto ml-2 lg:ml-3 overflow-auto'>
-                                  {product.name} 
+                                  {product.name}
                                 </p>
                               </div>
                             ))}
@@ -237,7 +251,12 @@ const UserProfile = () => {
                 </table>
               </div>
             </div>
-          }
+          )}
+          {showSellerOrdersList && (
+            <div className="mt-8">
+              <SellerOrdersList />
+            </div>
+          )}
         </div>
       </div>
     </div>

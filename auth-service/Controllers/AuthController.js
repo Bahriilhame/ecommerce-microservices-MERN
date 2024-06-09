@@ -28,7 +28,7 @@ exports.registerUser = async (req, res) => {
       socketTimeoutMS: 45000
     });
 
-    const { lname, fname, email, password, phone,role } = req.body;
+    const { lname, fname, email, password, phone,address,role } = req.body;
 
     // Vérification si l'utilisateur existe déjà
     const existingUser = await User.findOne({ email });
@@ -46,6 +46,7 @@ exports.registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       phone,
+      address,
       role
     });
 
@@ -135,6 +136,24 @@ exports.updateUserProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(req.userId, req.body, { new: true });
     if (!updatedUser) return res.status(404).json({ message: 'User not found' });
     res.status(200).json({ message: 'Profile updated successfully', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getBuyer = async (req, res) => {
+  try {
+    const url = `mongodb+srv://${process.env.db_username}:${process.env.db_password}@ecom-avito-project-clus.omnkh3d.mongodb.net/auth-service`;
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000
+    });
+    
+    const user = await User.findById(req.params.id_buyer).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

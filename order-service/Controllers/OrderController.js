@@ -1,5 +1,6 @@
 const Order = require('../Models/Order');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 const createOrder = async (req, res) => {
   try {
@@ -52,7 +53,52 @@ const getUserOrders = async (req, res) => {
   }
 };
 
+const getOrdersBySeller = async (req, res) => {
+  try {
+    const url = `mongodb+srv://${process.env.db_username}:${process.env.db_password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${process.env.db_name}`;
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000
+    });
+    
+    const sellerId = req.params.sellerId;
+    const orders = await Order.find({ 'products.id_seller': sellerId });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: 'No orders found for this seller' });
+    }
+
+    const sellerProducts = await Promise.all(orders.map(async (order) => {
+      const filteredProducts = order.products.filter(product => product.id_seller.toString() === sellerId);
+      const productsWithBuyerInfo = await Promise.all(filteredProducts.map(async (product) => {
+        try {
+          const buyerInfo = await axios.get(`http://localhost:8002/api/profile/${order.id_buyer}`);
+          console.log("buyerInfo: ", buyerInfo.data);
+          return {
+            ...product.toObject(),
+            id_buyer: order.id_buyer,
+            buyerInfo: buyerInfo.data,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt
+          };
+        } catch (error) {
+          console.error("Error fetching buyer info:", error);
+          return null;
+        }
+      }));
+      return productsWithBuyerInfo.filter(product => product !== null);
+    }));
+    
+    res.status(200).json({ products: sellerProducts.flat() });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
 module.exports = {
   createOrder,
-  getUserOrders
+  getUserOrders,
+  getOrdersBySeller
 };
