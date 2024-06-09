@@ -1,23 +1,55 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCartIcon, UserIcon  } from '@heroicons/react/outline';
+import { ShoppingCartIcon, UserIcon } from '@heroicons/react/outline';
 
 const Navbar = ({ setIsCartOpen, cart }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
       setIsLargeScreen(window.innerWidth > 768);
     };
 
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    };
+
     window.addEventListener('resize', handleResize);
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
     handleResize();
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
   }, []);
 
-  console.log(cart);
   const totalAnnouncementsInCart = cart ? cart.annonces.length : 0;
+
+  const handleProfileClick = () => {
+    localStorage.getItem('user')
+      ? setIsDropdownOpen(!isDropdownOpen)
+      : window.location = 'http://127.0.0.1:5173/login';
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location = 'http://127.0.0.1:5173/login';
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-30 mx-auto w-full max-w-screen-md border border-gray-100 bg-white/80 py-3 shadow backdrop-blur-lg md:top-6 md:rounded-3xl lg:max-w-screen-lg">
@@ -61,9 +93,17 @@ const Navbar = ({ setIsCartOpen, cart }) => {
               <ShoppingCartIcon className="h-8 w-8 text-gray-900" />
               <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 bg-red-500 rounded-full text-xs text-white">{totalAnnouncementsInCart}</span>
             </button>
-            <Link to="/profile" className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50">
-              <UserIcon className="h-6 w-6 text-gray-900" />
-            </Link>
+            <div className="relative">
+              <button onClick={handleProfileClick} className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50">
+                <UserIcon className="h-6 w-6 text-gray-900" />
+              </button>
+              {localStorage.getItem('user') && isDropdownOpen && (
+                <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>Profile</Link>
+                  <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
