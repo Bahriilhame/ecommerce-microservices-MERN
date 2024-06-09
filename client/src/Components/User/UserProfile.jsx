@@ -21,6 +21,7 @@ const UserProfile = () => {
   const [showNotif,setShowNotif]=useState(false);
 
   useEffect(() => {
+    document.title = "User Profile";
     const fetchUserProfile = async () => {
       try {
         const response = await authAPI.getUserProfile();
