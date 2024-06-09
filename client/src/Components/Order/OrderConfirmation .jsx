@@ -1,4 +1,3 @@
-import React from 'react';
 
 const OrderConfirmation = ({ cart, totalPrice, onConfirm, onCancel }) => {
   return (
@@ -6,7 +5,7 @@ const OrderConfirmation = ({ cart, totalPrice, onConfirm, onCancel }) => {
       <div className="bg-white max-w-md w-full mx-4 rounded-md shadow-lg">
         <div className="px-6 py-4">
           <h2 className="text-lg font-semibold">Order Confirmation</h2>
-          <ul className="mt-4">
+          <ul className="mt-4 h-60 overflow-y-auto">
             {cart.annonces.map((item) => (
               <li key={item._id} className="flex justify-between items-center border-b border-gray-200 py-2">
                 <div>
@@ -18,7 +17,7 @@ const OrderConfirmation = ({ cart, totalPrice, onConfirm, onCancel }) => {
               </li>
             ))}
           </ul>
-          <div className="mt-4">
+          <div className="mt-4 flex justify-end">
             <p className="text-lg font-semibold">Total: {totalPrice} $</p>
           </div>
         </div>

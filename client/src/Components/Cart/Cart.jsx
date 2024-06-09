@@ -147,7 +147,7 @@ const Cart = ({ setIsCartOpen, setCart, cart }) => {
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black bg-opacity-50 flex items-center justify-center" onClick={() => setIsCartOpen(false)}>
-        <div className="bg-white max-w-md w-full h-4/6 overflow-auto mx-4 rounded-md shadow-lg sm:h-3/6 md:h-1/2" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white max-w-md w-full h-[55%] mx-4 rounded-md shadow-lg sm:h-[55%] md:h-[55%]" onClick={(e) => e.stopPropagation()}>
           <div className="px-6 py-4">
             <div className="flex justify-between">
               <h2 className="text-lg font-semibold">Shopping Cart</h2>
@@ -157,7 +157,7 @@ const Cart = ({ setIsCartOpen, setCart, cart }) => {
                 </svg>
               </button>
             </div>
-            <ul className="mt-4">
+            <ul className="mt-4 h-60 overflow-y-auto">
               {cart.annonces.map((item) => (
                 <li key={item._id} className="flex justify-between items-center border-b border-gray-200 py-2">
                   <div className="flex items-center">
@@ -170,11 +170,9 @@ const Cart = ({ setIsCartOpen, setCart, cart }) => {
                           type="number"
                           value={item.quantity}
                           onChange={(e) => handleQuantityChange(item.annonce._id, e.target.value)}
-                          className="border border-gray-300 w-20 rounded-md px-2 py-1"
+                          className="border border-gray-300 w-20 rounded-md px-2 py-1 ml-2"
                         />
                       </p>
-
-                      <p className="text-gray-600">Seller ID: {item.id_seller}</p>
                     </div>
                   </div>
                   <button className="text-red-500 hover:text-red-600 focus:outline-none" onClick={() => handleRemove(item.annonce._id)}>
@@ -185,15 +183,15 @@ const Cart = ({ setIsCartOpen, setCart, cart }) => {
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-            <p className="text-lg font-semibold">Total: {totalPrice} $</p>
-            <button
-              className="bg-[#14b8a6] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#0d9488] focus:outline-none focus:ring focus:ring-[#14b8a6]"
-              onClick={handleCheckout}
-            >
-              Checkout
-            </button>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+              <p className="text-lg font-semibold">Total: {totalPrice} $</p>
+              <button
+                className="bg-[#14b8a6] text-white font-semibold py-2 px-4 rounded-md hover:bg-[#0d9488] focus:outline-none focus:ring focus:ring-[#14b8a6]"
+                onClick={handleCheckout}
+              >
+                Checkout
+              </button>
+            </div>
           </div>
         </div>
       </div>

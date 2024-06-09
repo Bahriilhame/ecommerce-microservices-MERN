@@ -19,6 +19,7 @@ const CreateAnnonceForm = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    document.title = "Create Annonce";
     const fetchCategories = async () => {
       try {
         const categoriesData = await authAPI.getAllCategories();

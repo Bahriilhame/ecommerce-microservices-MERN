@@ -10,6 +10,7 @@ const AnnonceDetails = () => {
   const [quantity, setQuantity] = useState(1); // Default quantity is 1
 
     useEffect(() => {
+      document.title = "Annonce Details";
       const fetchAnnonceDetails = async () => {
         try {
           const response = await authAPI.getAnnonceByID(id);

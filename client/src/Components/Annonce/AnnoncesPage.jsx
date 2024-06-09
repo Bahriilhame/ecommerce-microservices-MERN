@@ -6,13 +6,16 @@ import {  useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import authAPI from '../../Services/auth';
+import Toast from '../../Services/Toast';
 
 const AnnoncesPage = () => {
   const [annonces, setAnnonces] = useState([]);
   const slidersRef = useRef({});
   const [loading, setLoading] = useState(false);
+  const [showNotif,setShowNotif]=useState(false);
 
   useEffect(() => {
+    document.title = "Home";
     const fetchAnnonces = async () => {
       try {
         const response = await authAPI.getAnnonces();
@@ -76,7 +79,8 @@ const AnnoncesPage = () => {
     setLoading(true);
     try {
       await authAPI.addToCart(annonceId, 1);
-      alert('Annonce ajoutée au panier avec succès !');
+      setShowNotif(true);
+      // alert('Annonce ajoutée au panier avec succès !');
     } catch (error) {
       console.error(error.response.data);
       alert('Une erreur s\'est produite lors de l\'ajout au panier.');
@@ -86,6 +90,7 @@ const AnnoncesPage = () => {
 
   return (
     <div className='mt-36 mx-auto w-full max-w-screen-lg'>
+      {showNotif && <Toast message='Added to the cart successfuly'/>}
       {Object.entries(annoncesParCategorie).map(([categorie, annoncesCategorie], index, categories) => (
         <div key={categorie} className={index !== categories.length - 1 ? 'mb-8' : ''}>
           <h1>Nouvelles annonces des {categorie}</h1>

@@ -127,6 +127,11 @@ exports.updateUserProfile = async (req, res) => {
       socketTimeoutMS: 45000
     });
 
+    if (req.body.password) {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      req.body.password = hashedPassword;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(req.userId, req.body, { new: true });
     if (!updatedUser) return res.status(404).json({ message: 'User not found' });
     res.status(200).json({ message: 'Profile updated successfully', user: updatedUser });

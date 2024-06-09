@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import authAPI from '../../Services/auth';
 import { UserCircleIcon } from '@heroicons/react/solid';
+import Toast from '../../Services/Toast';
 
 const UserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -17,6 +18,7 @@ const UserProfile = () => {
   const [orders, setOrders] = useState([]);
   const [showProfileSettings, setShowProfileSettings] = useState(true);
   const [showOrdersList, setShowOrdersList] = useState(false);
+  const [showNotif,setShowNotif]=useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -70,7 +72,7 @@ const UserProfile = () => {
       const response = await authAPI.updateUserProfile(formData);
       console.log(response.data);
       setUserProfile(response.data);
-      alert('Profile updated successfully');
+      setShowNotif(true);
     } catch (error) {
       console.error(error.response.data);
       alert('Failed to update profile');
@@ -85,7 +87,8 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="container mt-[60px] sm:mt-[120px] ">
+    <div className="container mt-[60px] sm:mt-[120px] mx-auto w-full max-w-screen-lg">
+      {showNotif && <Toast message='Updated successfuly'/>}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white shadow-lg p-4 col-span-1">
           {userProfile && (
