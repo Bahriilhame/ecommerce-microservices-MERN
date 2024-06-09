@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCartIcon } from '@heroicons/react/outline';
+import { ShoppingCartIcon, UserIcon  } from '@heroicons/react/outline';
 
 const Navbar = ({ setIsCartOpen, cart }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(true);
@@ -61,6 +61,9 @@ const Navbar = ({ setIsCartOpen, cart }) => {
               <ShoppingCartIcon className="h-8 w-8 text-gray-900" />
               <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 bg-red-500 rounded-full text-xs text-white">{totalAnnouncementsInCart}</span>
             </button>
+            <Link to="/profile" className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50">
+              <UserIcon className="h-6 w-6 text-gray-900" />
+            </Link>
           </div>
         </div>
       </div>

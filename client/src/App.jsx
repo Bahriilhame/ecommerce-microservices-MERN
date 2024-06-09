@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './StaticComponents/Navbar';
 import Cart from './Components/Cart/Cart';
-import Login from './Components//Auth/Login';
+import Login from './Components/Auth/Login';
 import Register from './Components/Auth/Register';
 import UserProfile from './Components/User/UserProfile';
 import UpdateProfile from './Components/User/UpdateProfile';
@@ -13,21 +13,34 @@ import AnnonceDetails from './Components/Annonce/AnnonceDetails';
 const RoutesComponent = () => {
   const [cart, setCart] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  console.log("cart count: ",cart)
+  const isAuthenticated = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user'));
+
   return (
-      <BrowserRouter>
-        <Navbar setIsCartOpen={setIsCartOpen} cart={cart}/>
-        {isCartOpen && <Cart setIsCartOpen={setIsCartOpen} setCart={setCart} cart={cart}/>}
-        <Routes className="mt-40">
-          <Route path="/" element={<AnnoncesPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/profile/update" element={<UpdateProfile />} />
-          <Route path="/annonces/create" element={<CreateAnnonce />} />
-          <Route path="/annonces/:id" element={<AnnonceDetails />} />
-        </Routes>
-      </BrowserRouter>
+    <BrowserRouter>
+      <Navbar setIsCartOpen={setIsCartOpen} cart={cart} />
+      {isCartOpen && <Cart setIsCartOpen={setIsCartOpen} setCart={setCart} cart={cart} />}
+      <Routes className="mt-40">
+        <Route path="/" element={<AnnoncesPage />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
+        <Route path="/profile" element={!isAuthenticated ? <Navigate to="/login" /> : <UserProfile />} />
+        <Route path="/profile/update" element={!isAuthenticated ? <Navigate to="/login" /> : <UpdateProfile />} />
+        <Route
+          path="/annonces/create"
+          element={
+            !isAuthenticated ? (
+              <Navigate to="/login" />
+            ) : user.role === 'vendeur' ? (
+              <CreateAnnonce />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route path="/annonces/:id" element={<AnnonceDetails />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 

@@ -1,9 +1,8 @@
 import  { useState } from 'react';
 import authAPI from '../../Services/auth';
-import {useNavigate, Link  } from 'react-router-dom';
+import {Link } from 'react-router-dom';
 
 const Login = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -13,16 +12,16 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await authAPI.login(formData);
-      console.log(response.data);
-      navigate('/profile')
+    const response = await authAPI.login(formData);
+    window.location='http://127.0.0.1:5173/profile';
     } catch (error) {
-      console.error(error.response.data);
+    console.error(error.response.data);
     }
-  };
+};
+  
 
   return (
     <div className="min-h-screen text-gray-900 flex justify-center">

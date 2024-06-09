@@ -96,3 +96,57 @@ exports.addToCart = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+exports.clearCart = async (req, res) => {
+  try {
+    const url = `mongodb+srv://${process.env.db_username}:${process.env.db_password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${process.env.db_name}`;
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000
+    });
+
+    const userId = req.params.id_buyer;
+
+    let cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    cart.annonces = [];
+
+    await cart.save();
+    res.status(200).json({ message: 'Cart cleared successfully', cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.updateQuantity = async (req, res) => {
+  try {
+    const { annonceId, quantity } = req.body;
+    const userId = req.params.id_buyer;
+
+    let cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    const existingAdIndex = cart.annonces.findIndex(item => item.annonce._id.toString() === annonceId);
+    if (existingAdIndex === -1) {
+      return res.status(404).json({ message: 'Product not found in cart' });
+    }
+
+    cart.annonces[existingAdIndex].quantity = quantity;
+
+    await cart.save();
+    res.status(200).json({ message: 'Quantity updated successfully', cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
