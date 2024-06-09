@@ -3,6 +3,7 @@ import authAPI from '../../Services/auth';
 import { UserCircleIcon } from '@heroicons/react/solid';
 import Toast from '../../Services/Toast';
 import SellerOrdersList from '../Order/SellerOrdersList';
+import AnnoncesBySeller from '../Annonce/AnnoncesBySeller';
 
 const UserProfile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -252,6 +253,7 @@ const UserProfile = () => {
               </div>
             </div>
           )}
+          <AnnoncesBySeller/>
           {showSellerOrdersList && (
             <div className="mt-8">
               <SellerOrdersList />

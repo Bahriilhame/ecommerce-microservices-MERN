@@ -203,6 +203,43 @@ const authAPI = {
       throw error;
     }
   },
+
+  getAnnoncesBySeller: async (idSeller) => {
+    try {
+      const response = await axios.get(`${API_URL_annonce}/annonces/seller/${idSeller}`);
+      return response;
+    } catch (error) {
+      console.error('Error fetching annonces:', error);
+      throw error;
+    }
+  },
+
+  deleteAnnonceById: async (annonceId) => {
+    try {
+      const response = await axios.delete(`${API_URL_annonce}/annonces/${annonceId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching annonces:', error);
+      throw error;
+    }
+  },
+
+  updateAnnonceById: async (id, updatedAnnonceData) => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    };
+    try {
+      const response = await axios.put(`${API_URL_annonce}/annonces/${id}`, updatedAnnonceData, config);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating annonce:', error);
+      throw error;
+    }
+  },
 };
 
 export default authAPI;

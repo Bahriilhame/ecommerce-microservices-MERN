@@ -95,15 +95,21 @@ exports.updateAnnonceById = async (req, res) => {
       return res.status(404).json({ message: 'Annonce not found' });
     }
 
-    // Vérifier si l'utilisateur est autorisé à mettre à jour cette annonce
-    if (annonceToUpdate.id_vendeur.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'You are Unauthorized to update this annonce' });
+    // Mise à jour des champs de l'annonce
+    for (const [key, value] of Object.entries(req.body)) {
+      annonceToUpdate[key] = value;
     }
 
-    // Mettre à jour l'annonce
-    const updatedAnnonce = await Annonce.findByIdAndUpdate(req.params.id, req.body, { new: true });
- 
-    res.status(200).json({ message: 'Annonce updated successfully',updatedAnnonce});
+    // Mettre à jour l'image si elle est fournie
+    if (req.file) {
+      annonceToUpdate.image_name = req.file.filename;
+      annonceToUpdate.image_path = req.file.path;
+    }
+
+    // Enregistrer l'annonce mise à jour
+    const updatedAnnonce = await annonceToUpdate.save();
+
+    res.status(200).json({ message: 'Annonce updated successfully', updatedAnnonce });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -126,15 +132,28 @@ exports.deleteAnnonceById = async (req, res) => {
       return res.status(404).json({ message: 'Annonce not found' });
     }
 
-    // Vérifier si l'utilisateur est autorisé à supprimer cette annonce
-    if (annonceToDelete.id_vendeur.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'You are Unauthorized to delete this annonce' });
-    }
-
     // Supprimer l'annonce
     const deletedAnnonce = await Annonce.findByIdAndDelete(req.params.id);
-    console.log(deletedAnnonce);
     res.status(200).json({ message: 'Annonce deleted successfully', deletedAnnonce });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Read all annonces of a specific seller
+exports.getAllAnnoncesBySeller = async (req, res) => {
+  try {
+    const url = `mongodb+srv://${process.env.db_username}:${process.env.db_password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${process.env.db_name}`;
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000
+    });
+
+    const annonces = await Annonce.find({ id_vendeur: req.params.idSeller }).populate('id_categorie');
+    console.log(annonces);
+    res.status(200).json(annonces);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

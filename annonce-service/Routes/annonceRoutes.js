@@ -14,9 +14,12 @@ router.post('/create', authMiddleware,upload.single('image'),annonceController.c
 router.get('/:id' ,annonceController.getAnnonceById);
 
 // update an annonce by ID
-router.put('/update/:id', authMiddleware ,annonceController.updateAnnonceById);
+router.put('/:id' ,upload.single('image'),annonceController.updateAnnonceById);
 
 // delete an annonce by ID
-router.delete('/delete/:id', authMiddleware , annonceController.deleteAnnonceById);
+router.delete('/:id' , annonceController.deleteAnnonceById);
+
+// Route to get all announcements of a specific seller
+router.get('/seller/:idSeller',annonceController.getAllAnnoncesBySeller);
 
 module.exports = router;
