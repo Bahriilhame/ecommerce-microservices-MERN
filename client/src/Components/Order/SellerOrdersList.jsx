@@ -83,7 +83,7 @@ const SellerOrdersList = () => {
                         className="border border-gray-300 rounded-md"
                       >
                         <option value="pending">Pending</option>
-                        <option value="completed">Completed</option>
+                        <option value="delivred">Delivred</option>
                         <option value="canceled">Canceled</option>
                       </select>
                     </td>
