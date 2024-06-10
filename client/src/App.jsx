@@ -42,6 +42,11 @@ const RoutesComponent = () => {
     }
   };
 
+  const updateCartAndWishlistTotal = async () => {
+    await fetchCart();
+    await fetchWishlist();
+  };
+
   return (
     <BrowserRouter>
       <Navbar 
@@ -72,7 +77,7 @@ const RoutesComponent = () => {
             )
           }
         />
-        <Route path="/annonces/:id" element={<AnnonceDetails />} />
+        <Route path="/annonces/:id" element={<AnnonceDetails updateCartAndWishlistTotal={updateCartAndWishlistTotal} />} />
       </Routes>
     </BrowserRouter>
   );
