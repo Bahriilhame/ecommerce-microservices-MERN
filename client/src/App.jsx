@@ -9,17 +9,21 @@ import UpdateProfile from './Components/User/UpdateProfile';
 import AnnoncesPage from './Components/Annonce/AnnoncesPage';
 import CreateAnnonce from './Components/Annonce/CreateAnnonce';
 import AnnonceDetails from './Components/Annonce/AnnonceDetails';
+import Wishlist from './Components/Wishlist/Wishlist';
 
 const RoutesComponent = () => {
   const [cart, setCart] = useState(null);
+  const [wishlist, setWishlist] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const isAuthenticated = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <BrowserRouter>
-      <Navbar setIsCartOpen={setIsCartOpen} cart={cart} />
+      <Navbar setIsCartOpen={setIsCartOpen} cart={cart} setIsWishlistOpen={setIsWishlistOpen} wishlist={wishlist}/>
       {isCartOpen && <Cart setIsCartOpen={setIsCartOpen} setCart={setCart} cart={cart} />}
+      {isWishlistOpen && <Wishlist setIsWishlistOpen={setIsWishlistOpen} setWishlist={setWishlist} wishlist={wishlist} />}
       <Routes className="mt-40">
         <Route path="/" element={<AnnoncesPage />} />
         <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
