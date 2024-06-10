@@ -1,8 +1,8 @@
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { ChevronLeftIcon, ChevronRightIcon,ShoppingCartIcon  } from '@heroicons/react/solid'; // Import des icônes de flèches
-import {  useRef } from 'react';
+import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from '@heroicons/react/solid';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import authAPI from '../../Services/auth';
@@ -11,8 +11,8 @@ import Toast from '../../Services/Toast';
 const AnnoncesPage = () => {
   const [annonces, setAnnonces] = useState([]);
   const slidersRef = useRef({});
-  const [loading, setLoading] = useState(false);
-  const [showNotif,setShowNotif]=useState(false);
+  const [loadingStates, setLoadingStates] = useState({});
+  const [showNotif, setShowNotif] = useState(false);
 
   useEffect(() => {
     document.title = "Home";
@@ -73,24 +73,22 @@ const AnnoncesPage = () => {
     slidersRef.current[categorie].slickPrev();
   };
 
-  const addToCart = async (event,annonceId) => {
+  const addToCart = async (event, annonceId) => {
     event.preventDefault();
-    console.log("stopped");
-    setLoading(true);
+    setLoadingStates((prevStates) => ({ ...prevStates, [annonceId]: true }));
     try {
       await authAPI.addToCart(annonceId, 1);
       setShowNotif(true);
-      // alert('Annonce ajoutée au panier avec succès !');
     } catch (error) {
       console.error(error.response.data);
       alert('Une erreur s\'est produite lors de l\'ajout au panier.');
     }
-    setLoading(false);
+    setLoadingStates((prevStates) => ({ ...prevStates, [annonceId]: false }));
   };
 
   return (
     <div className='mt-36 mx-auto w-full max-w-screen-lg'>
-      {showNotif && <Toast message='Added to the cart successfuly'/>}
+      {showNotif && <Toast message='Added to the cart successfully' />}
       {Object.entries(annoncesParCategorie).map(([categorie, annoncesCategorie], index, categories) => (
         <div key={categorie} className={index !== categories.length - 1 ? 'mb-8' : ''}>
           <h1>Nouvelles annonces des {categorie}</h1>
@@ -100,22 +98,20 @@ const AnnoncesPage = () => {
                 <div key={annonce._id} className="max-w-md mx-auto shadow-md rounded-md overflow-hidden m-2 p-3 duration-500 hover:scale-100 hover:shadow-xl" style={{ margin: '0 8px' }}> {/* Ajout de la marge */}
                   <Link to={`/annonces/${annonce._id}`}>
                     <div className="relative">
-                      <img className="w-full h-[250px]" src={`http://localhost:8001/uploads/${annonce.image_name}`} alt="Product Image"/>
+                      <img className="w-full h-[250px]" src={`http://localhost:8001/uploads/${annonce.image_name}`} alt="Product Image" />
                       <div className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 m-2 rounded-md text-sm font-medium">SALE</div>
                     </div>
                     <div className="p-4">
                       <h3 className="text-lg font-medium mb-2">{annonce.title}</h3>
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-lg">${annonce.price}</span>
-                        {/* <button className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded">Add to Cart</button> */}
-                        <button onClick={(e)=>addToCart(e,annonce._id)} disabled={loading} className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded flex items-center">
-                          <ShoppingCartIcon className="h-5 w-5 mr-1" /> 
-                          {loading ? 'Loading...' : `Add to cart`}
+                        <button onClick={(e) => addToCart(e, annonce._id)} disabled={loadingStates[annonce._id]} className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                          <ShoppingCartIcon className="h-5 w-5 mr-1" />
+                          {loadingStates[annonce._id] ? 'Loading...' : 'Add to cart'}
                         </button>
                       </div>
                     </div>
                   </Link>
-
                 </div>
               ))}
             </Slider>

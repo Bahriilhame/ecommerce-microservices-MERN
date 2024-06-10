@@ -22,6 +22,7 @@ const UserProfile = () => {
   const [showOrdersList, setShowOrdersList] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [showSellerOrdersList, setShowSellerOrdersList] = useState(false);
+  const [showSellerAnnonce, setShowSellerAnnonce] = useState(false);
 
   useEffect(() => {
     document.title = "User Profile";
@@ -118,15 +119,20 @@ const UserProfile = () => {
           )}
           <div className="mt-2 flex flex-row lg:flex-col lg:justify-between">
             <div className="flex items-center border-b border-gray-200 py-2">
-              <button className={`text-lg font-semibold py-2 mr-4 ${showProfileSettings ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowProfileSettings(true); setShowOrdersList(false); setShowSellerOrdersList(false); }}>Profile Settings</button>
+              <button className={`text-lg font-semibold py-2 mr-4 ${showProfileSettings ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowProfileSettings(true); setShowOrdersList(false); setShowSellerOrdersList(false); setShowSellerAnnonce(false)}}>Profile Settings</button>
             </div>
             <div className="flex items-center border-b border-gray-200 py-2">
-              <button className={`text-lg font-semibold py-2 mr-4 ${showOrdersList ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowOrdersList(true); setShowProfileSettings(false); setShowSellerOrdersList(false); }}>Orders List <span className="bg-red-500 text-white rounded-full px-2 ml-2">{orders.length}</span></button>
+              <button className={`text-lg font-semibold py-2 mr-4 ${showOrdersList ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowOrdersList(true); setShowProfileSettings(false); setShowSellerOrdersList(false); setShowSellerAnnonce(false)}}>Orders List <span className="bg-red-500 text-white rounded-full px-2 ml-2">{orders.length}</span></button>
             </div>
             {userProfile && userProfile.role === 'vendeur' && (
-              <div className="flex items-center border-b border-gray-200 py-2">
-                <button className={`text-lg font-semibold py-2 mr-4 ${showSellerOrdersList ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowSellerOrdersList(true); setShowProfileSettings(false); setShowOrdersList(false); }}>Seller Orders</button>
-              </div>
+              <>
+                <div className="flex items-center border-b border-gray-200 py-2">
+                  <button className={`text-lg font-semibold py-2 mr-4 ${showSellerOrdersList ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowSellerOrdersList(true); setShowProfileSettings(false); setShowOrdersList(false);setShowSellerAnnonce(false) }}>Seller Orders</button>
+                </div>
+                <div className="flex items-center border-b border-gray-200 py-2">
+                  <button className={`text-lg font-semibold py-2 mr-4 ${showSellerAnnonce ? 'border-b-2 border-gray-500' : ''}`} onClick={() => { setShowSellerAnnonce(true); setShowProfileSettings(false); setShowOrdersList(false); setShowSellerOrdersList(false)}}>Annonces</button>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -253,10 +259,14 @@ const UserProfile = () => {
               </div>
             </div>
           )}
-          <AnnoncesBySeller/>
           {showSellerOrdersList && (
             <div className="mt-8">
               <SellerOrdersList />
+            </div>
+          )}
+          {showSellerAnnonce && (
+            <div className="mt-8">
+              <AnnoncesBySeller />
             </div>
           )}
         </div>

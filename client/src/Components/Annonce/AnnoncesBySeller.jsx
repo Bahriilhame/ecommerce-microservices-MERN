@@ -48,7 +48,7 @@ const AnnoncesBySeller = () => {
     <div className="md:mt-[50px] mx-auto w-full max-w-screen-lg">
       <div className="bg-white shadow-lg p-4 col-span-2">
         <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4">Annonces du vendeur</h2>
+          <h2 className="text-xl font-semibold mb-4">Annonces</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
