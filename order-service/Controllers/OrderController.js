@@ -27,6 +27,21 @@ const createOrder = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
+    // Appel à l'API des annonces pour mettre à jour la quantité
+    for (const product of products) {
+      try {
+        const response = await axios.put('http://localhost:8001/annonces/update-quantity/annonce', {
+          annonceId: product._id,
+          quantity: product.quantity
+        });
+
+        console.log(`Réponse de l'API des annonces pour l'annonce ${product._id}:`, response.data);
+      } catch (error) {
+        console.error(`Erreur lors de la mise à jour de l'annonce ${product._id}:`, error.response ? error.response.data : error.message);
+        return res.status(500).json({ message: 'Erreur lors de la mise à jour des annonces. ilhaam' });
+      }
+    }
+
     res.status(201).json(savedOrder);
   } catch (error) {
     console.error('Erreur lors de la création de la commande:', error);
