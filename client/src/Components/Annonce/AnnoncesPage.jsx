@@ -95,7 +95,6 @@ const AnnoncesPage = ({fetchCart,updateWishlistTotal}) => {
     setLoadingWishlist((prevStates) => ({ ...prevStates, [annonceId]: true }));
     try {
       await authAPI.addToWishlist(annonceId, 1);
-      alert('Annonce ajoutée au wishlist avec succès');
       setShowNotifwishlist(true);
       updateWishlistTotal();
     } catch (error) {
