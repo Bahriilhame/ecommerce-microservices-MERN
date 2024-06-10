@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import authAPI from '../../Services/auth';
 import { ShoppingCartIcon, HeartIcon } from '@heroicons/react/outline';
 
-const AnnonceDetails = () => {
+const AnnonceDetails = ({updateCartAndWishlistTotal}) => {
   const { id } = useParams();
   const [annonce, setAnnonce] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -31,24 +31,26 @@ const AnnonceDetails = () => {
     try {
       await authAPI.addToCart(annonce._id, quantity);
       alert('Annonce ajoutée au panier avec succès !');
+      updateCartAndWishlistTotal();
     } catch (error) {
       console.error(error.response.data);
       alert('Une erreur s\'est produite lors de l\'ajout au panier.');
     }
     setLoading(false);
   };
-
-    const addToWishlist = async () => {
-      setLoading(true);
-      try {
-        await authAPI.addToWishlist(annonce._id);
-        alert('Annonce ajoutée à la liste de souhaits avec succès !');
-      } catch (error) {
-        console.error(error.response.data);
-        alert('Une erreur s\'est produite lors de l\'ajout à la liste de souhaits.');
-      }
-      setLoading(false);
-    };
+  
+  const addToWishlist = async () => {
+    setLoading(true);
+    try {
+      await authAPI.addToWishlist(annonce._id);
+      alert('Annonce ajoutée à la liste de souhaits avec succès !');
+      updateCartAndWishlistTotal();
+    } catch (error) {
+      console.error(error.response.data);
+      alert('Une erreur s\'est produite lors de l\'ajout à la liste de souhaits.');
+    }
+    setLoading(false);
+  };
 
   return (
     <div className="max-w-4xl mx-auto mt-36 bg-white shadow-md rounded-md overflow-hidden">
