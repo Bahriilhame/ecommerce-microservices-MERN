@@ -30,7 +30,6 @@ const AnnonceDetails = ({updateCartAndWishlistTotal}) => {
     setLoading(true);
     try {
       await authAPI.addToCart(annonce._id, quantity);
-      alert('Annonce ajoutée au panier avec succès !');
       updateCartAndWishlistTotal();
     } catch (error) {
       console.error(error.response.data);
@@ -43,11 +42,10 @@ const AnnonceDetails = ({updateCartAndWishlistTotal}) => {
       setLoading(true);
       try {
         await authAPI.addToWishlist(annonce._id);
-        alert('Annonce ajoutée à la liste de souhaits avec succès !');
         updateCartAndWishlistTotal();
       } catch (error) {
         console.error(error.response.data);
-        alert('Une erreur s\'est produite lors de l\'ajout à la liste de souhaits.');
+        alert('Annonce déja existée dans wishlist');
       }
       setLoading(false);
     };
