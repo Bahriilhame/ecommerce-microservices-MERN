@@ -45,7 +45,7 @@ const AnnonceDetails = () => {
         alert('Annonce ajoutée à la liste de souhaits avec succès !');
       } catch (error) {
         console.error(error.response.data);
-        alert('Une erreur s\'est produite lors de l\'ajout à la liste de souhaits.');
+        alert('Annonce already exists in wishlist');
       }
       setLoading(false);
     };
