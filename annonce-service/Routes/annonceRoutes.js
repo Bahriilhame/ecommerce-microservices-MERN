@@ -22,4 +22,7 @@ router.delete('/:id' , annonceController.deleteAnnonceById);
 // Route to get all announcements of a specific seller
 router.get('/seller/:idSeller',annonceController.getAllAnnoncesBySeller);
 
+// Update quantity after passing an order
+router.put('/update-quantity/annonce', annonceController.updateAnnonceQuantity);
+
 module.exports = router;

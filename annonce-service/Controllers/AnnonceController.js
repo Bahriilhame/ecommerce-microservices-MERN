@@ -158,3 +158,39 @@ exports.getAllAnnoncesBySeller = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.updateAnnonceQuantity = async (req, res) => {
+  try {
+    const url = `mongodb+srv://${process.env.db_username}:${process.env.db_password}@ecom-avito-project-clus.omnkh3d.mongodb.net/${process.env.db_name}`;
+    await mongoose.connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000
+    });
+
+    const { annonceId, quantity } = req.body;
+
+    if (!annonceId || quantity === undefined) {
+      return res.status(400).json({ message: 'ID de l\'annonce et quantité sont requis.' });
+    }
+
+    const annonce = await Annonce.findById(annonceId);
+    if (!annonce) {
+      return res.status(404).json({ message: 'Annonce non trouvée.' });
+    }
+
+    annonce.quantity -= quantity;
+
+    if (annonce.quantity < 0) {
+      return res.status(400).json({ message: 'Quantité insuffisante.' });
+    }
+
+    await annonce.save();
+
+    res.status(200).json({ message: 'Quantité mise à jour.', annonce });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la quantité:', error);
+    res.status(500).json({ message: 'Erreur serveur.' });
+  }
+};
