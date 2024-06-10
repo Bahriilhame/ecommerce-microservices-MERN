@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCartIcon, UserIcon, HeartIcon } from '@heroicons/react/outline';
-const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen }) => {
+
+const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, fetchWishlist }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -29,6 +30,9 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen }) => {
 
     handleResize();
 
+    fetchCart();
+    fetchWishlist();
+
     return () => {
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('mousedown', handleClickOutside);
@@ -52,7 +56,6 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen }) => {
   };
 
   return (
-    <>
     <header className="fixed inset-x-0 top-0 z-30 mx-auto w-full max-w-screen-md border border-gray-100 bg-white/80 py-3 shadow backdrop-blur-lg md:top-6 md:rounded-3xl lg:max-w-screen-lg">
       <div className="px-4">
         <div className="flex items-center justify-between">
@@ -83,38 +86,34 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen }) => {
                 </button>
               </div>
             </form>
-        )}
-        <div className="flex items-center justify-end gap-3">
-        <Link className="items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50 inline-flex" to="/">Buy</Link>
-        <Link className="inline-flex items-center justify-center rounded-xl bg-[#14b8a6] px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:[#0d9488] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" to="/annonces/create">Publish an annonce</Link>
-                
-        <button className="relative" onClick={() => setIsCartOpen(true)}>
-          <ShoppingCartIcon className="h-8 w-8 text-gray-900" />
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 bg-red-500 rounded-full text-xs text-white">{totalAnnouncementsInCart}</span>
-        </button>
-        
-        <button className="relative" onClick={() => setIsWishlistOpen(true)}>
-          <HeartIcon className="h-8 w-8 text-gray-900" />
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 bg-red-500 rounded-full text-xs text-white">{totalAnnouncementsInWishlist}</span>
-        </button>
-        
-        <div className="relative">
-          <button onClick={handleProfileClick} className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50">
-            <UserIcon className="h-6 w-6 text-gray-900" />
-          </button>
-          {localStorage.getItem('user') && isDropdownOpen && (
-            <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
-              <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>Profile</Link>
-              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</button>
-            </div>
           )}
+          <div className="flex items-center justify-end gap-3">
+            <Link className="items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50 inline-flex" to="/">Buy</Link>
+            <Link className="inline-flex items-center justify-center rounded-xl bg-[#14b8a6] px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-150 hover:[#0d9488] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" to="/annonces/create">Publish an annonce</Link>
+            <button className="relative" onClick={() => setIsCartOpen(true)}>
+              <ShoppingCartIcon className="h-8 w-8 text-gray-900" />
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 bg-red-500 rounded-full text-xs text-white">{totalAnnouncementsInCart}</span>
+            </button>
+            <button className="relative" onClick={() => setIsWishlistOpen(true)}>
+              <HeartIcon className="h-8 w-8 text-gray-900" />
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 bg-red-500 rounded-full text-xs text-white">{totalAnnouncementsInWishlist}</span>
+            </button>
+            <div className="relative">
+              <button onClick={handleProfileClick} className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50">
+                <UserIcon className="h-6 w-6 text-gray-900" />
+              </button>
+              {localStorage.getItem('user') && isDropdownOpen && (
+                <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>Profile</Link>
+                  <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</header>
-    </>
-);
+    </header>
+  );
 };
 
 export default Navbar;

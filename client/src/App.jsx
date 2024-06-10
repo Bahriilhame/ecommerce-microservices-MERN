@@ -10,6 +10,7 @@ import AnnoncesPage from './Components/Annonce/AnnoncesPage';
 import CreateAnnonce from './Components/Annonce/CreateAnnonce';
 import AnnonceDetails from './Components/Annonce/AnnonceDetails';
 import Wishlist from './Components/Wishlist/Wishlist';
+import authAPI from './Services/auth'; // Make sure the path is correct
 
 const RoutesComponent = () => {
   const [cart, setCart] = useState(null);
@@ -19,9 +20,38 @@ const RoutesComponent = () => {
   const isAuthenticated = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
 
+  const fetchCart = async () => {
+    try {
+      const response = await authAPI.getCart();
+      const updatedCart = response.cart.annonces.map(item => ({
+        ...item,
+        id_seller: item.annonce.id_vendeur,
+      }));
+      setCart({ ...response.cart, annonces: updatedCart });
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+    }
+  };
+
+  const fetchWishlist = async () => {
+    try {
+      const response = await authAPI.getWishlist();
+      setWishlist({ ...response.wishlist });
+    } catch (error) {
+      console.error('Error fetching wishlist:', error);
+    }
+  };
+
   return (
     <BrowserRouter>
-      <Navbar setIsCartOpen={setIsCartOpen} cart={cart} setIsWishlistOpen={setIsWishlistOpen} wishlist={wishlist}/>
+      <Navbar 
+        setIsCartOpen={setIsCartOpen} 
+        cart={cart} 
+        setIsWishlistOpen={setIsWishlistOpen} 
+        wishlist={wishlist} 
+        fetchCart={fetchCart} 
+        fetchWishlist={fetchWishlist} 
+      />
       {isCartOpen && <Cart setIsCartOpen={setIsCartOpen} setCart={setCart} cart={cart} />}
       {isWishlistOpen && <Wishlist setIsWishlistOpen={setIsWishlistOpen} setWishlist={setWishlist} wishlist={wishlist} />}
       <Routes className="mt-40">
