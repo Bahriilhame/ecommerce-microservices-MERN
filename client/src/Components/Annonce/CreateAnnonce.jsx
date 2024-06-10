@@ -157,8 +157,8 @@ const CreateAnnonceForm = () => {
             required
           >
             <option value="">Sélectionner le statut</option>
-            <option value="actif">Actif</option>
-            <option value="inactif">Inactif</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
           </select>
         </div>
         <div className="mb-4">

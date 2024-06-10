@@ -14,12 +14,14 @@ const AnnoncesPage = () => {
   const [loadingStates, setLoadingStates] = useState({});
   const [showNotif, setShowNotif] = useState(false);
 
+  const user=JSON.parse(localStorage.getItem('user'));
   useEffect(() => {
     document.title = "Home";
     const fetchAnnonces = async () => {
       try {
         const response = await authAPI.getAnnonces();
-        setAnnonces(response.data.filter(annonce => annonce.status === 'active'));
+        setAnnonces(response.data.filter(annonce => annonce.status === 'active' && annonce.id_vendeur !== user._id));
+        console.log(annonces,user._id);
       } catch (error) {
         console.error(error.response.data);
       }
