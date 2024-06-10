@@ -44,6 +44,7 @@ const AnnonceDetails = ({updateCartAndWishlistTotal}) => {
       try {
         await authAPI.addToWishlist(annonce._id);
         alert('Annonce ajoutée à la liste de souhaits avec succès !');
+        updateCartAndWishlistTotal();
       } catch (error) {
         console.error(error.response.data);
         alert('Une erreur s\'est produite lors de l\'ajout à la liste de souhaits.');
