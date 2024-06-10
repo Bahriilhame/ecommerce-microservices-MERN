@@ -19,7 +19,7 @@ const AnnoncesPage = () => {
     const fetchAnnonces = async () => {
       try {
         const response = await authAPI.getAnnonces();
-        setAnnonces(response.data);
+        setAnnonces(response.data.filter(annonce => annonce.status === 'active'));
       } catch (error) {
         console.error(error.response.data);
       }
