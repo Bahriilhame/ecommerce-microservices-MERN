@@ -38,19 +38,18 @@ const AnnonceDetails = ({updateCartAndWishlistTotal}) => {
     }
     setLoading(false);
   };
-  
-  const addToWishlist = async () => {
-    setLoading(true);
-    try {
-      await authAPI.addToWishlist(annonce._id);
-      alert('Annonce ajoutée à la liste de souhaits avec succès !');
-      updateCartAndWishlistTotal();
-    } catch (error) {
-      console.error(error.response.data);
-      alert('Une erreur s\'est produite lors de l\'ajout à la liste de souhaits.');
-    }
-    setLoading(false);
-  };
+
+    const addToWishlist = async () => {
+      setLoading(true);
+      try {
+        await authAPI.addToWishlist(annonce._id);
+        alert('Annonce ajoutée à la liste de souhaits avec succès !');
+      } catch (error) {
+        console.error(error.response.data);
+        alert('Une erreur s\'est produite lors de l\'ajout à la liste de souhaits.');
+      }
+      setLoading(false);
+    };
 
   return (
     <div className="max-w-4xl mx-auto mt-36 bg-white shadow-md rounded-md overflow-hidden">
