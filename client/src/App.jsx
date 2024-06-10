@@ -42,6 +42,11 @@ const RoutesComponent = () => {
     }
   };
 
+  const updateCartAndWishlistTotal = async () => {
+    await fetchCart();
+    await fetchWishlist();
+  };
+
   return (
     <BrowserRouter>
       <Navbar 
@@ -55,7 +60,7 @@ const RoutesComponent = () => {
       {isCartOpen && <Cart setIsCartOpen={setIsCartOpen} setCart={setCart} cart={cart} />}
       {isWishlistOpen && <Wishlist setIsWishlistOpen={setIsWishlistOpen} setWishlist={setWishlist} wishlist={wishlist} />}
       <Routes className="mt-40">
-        <Route path="/" element={<AnnoncesPage />} />
+        <Route path="/" element={<AnnoncesPage fetchCart={fetchCart} fetchWishlist={fetchWishlist} />} />
         <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
         <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
         <Route path="/profile" element={!isAuthenticated ? <Navigate to="/login" /> : <UserProfile />} />
@@ -72,7 +77,7 @@ const RoutesComponent = () => {
             )
           }
         />
-        <Route path="/annonces/:id" element={<AnnonceDetails />} />
+        <Route path="/annonces/:id" element={<AnnonceDetails updateCartAndWishlistTotal={updateCartAndWishlistTotal} />} />
       </Routes>
     </BrowserRouter>
   );

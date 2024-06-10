@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import authAPI from '../../Services/auth';
 import Toast from '../../Services/Toast';
 
-const AnnoncesPage = () => {
+const AnnoncesPage = ({fetchCart}) => {
   const [annonces, setAnnonces] = useState([]);
   const slidersRef = useRef({});
   const [loadingCart, setLoadingCart] = useState({});
@@ -82,6 +82,7 @@ const AnnoncesPage = () => {
     try {
       await authAPI.addToCart(annonceId, 1);
       setShowNotif(true);
+      fetchCart();
     } catch (error) {
       console.error(error.response.data);
       alert('Une erreur s\'est produite lors de l\'ajout au panier.');
