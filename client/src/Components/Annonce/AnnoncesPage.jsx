@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import authAPI from '../../Services/auth';
 import Toast from '../../Services/Toast';
 
-const AnnoncesPage = ({fetchCart}) => {
+const AnnoncesPage = ({fetchCart,updateWishlistTotal}) => {
   const [annonces, setAnnonces] = useState([]);
   const slidersRef = useRef({});
   const [loadingCart, setLoadingCart] = useState({});
@@ -97,6 +97,7 @@ const AnnoncesPage = ({fetchCart}) => {
       await authAPI.addToWishlist(annonceId, 1);
       alert('Annonce ajoutée au wishlist avec succès');
       setShowNotifwishlist(true);
+      updateWishlistTotal();
     } catch (error) {
       console.error(error.response.data);
       alert('Annonce déjà existante dans le wishlist');
