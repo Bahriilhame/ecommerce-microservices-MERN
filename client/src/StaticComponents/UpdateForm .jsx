@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import authAPI from '../Services/auth';
 
 const UpdateForm = ({ annonce, onClose, isOpen }) => {
-  const [updatedTitle, setUpdatedTitle] = useState(annonce.title);
-  const [updatedDescription, setUpdatedDescription] = useState(annonce.description);
-  const [updatedQuantity, setUpdatedQuantity] = useState(annonce.quantity);
-  const [updatedPrice, setUpdatedPrice] = useState(annonce.price);
-  const [updatedAdresse, setUpdatedAdresse] = useState(annonce.adresse);
-  const [updatedStatus, setUpdatedStatus] = useState(annonce.status);
-  const [updatedCategory, setUpdatedCategory] = useState(annonce.id_categorie._id);
-  const [updatedImage, setUpdatedImage] = useState(annonce.image_name);
+  const [updatedTitle, setUpdatedTitle] = useState('');
+  const [updatedDescription, setUpdatedDescription] = useState('');
+  const [updatedQuantity, setUpdatedQuantity] = useState('');
+  const [updatedPrice, setUpdatedPrice] = useState('');
+  const [updatedAdresse, setUpdatedAdresse] = useState('');
+  const [updatedStatus, setUpdatedStatus] = useState('');
+  const [updatedCategory, setUpdatedCategory] = useState('');
+  const [updatedImage, setUpdatedImage] = useState();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -24,6 +24,19 @@ const UpdateForm = ({ annonce, onClose, isOpen }) => {
 
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      setUpdatedTitle(annonce.title);
+      setUpdatedDescription(annonce.description);
+      setUpdatedQuantity(annonce.quantity);
+      setUpdatedPrice(annonce.price);
+      setUpdatedAdresse(annonce.adresse);
+      setUpdatedStatus(annonce.status);
+      setUpdatedCategory(annonce.id_categorie._id);
+      setUpdatedImage(annonce.image_name);
+    }
+  }, [annonce, isOpen]);
 
   const handleUpdate = async () => {
     try {
@@ -42,6 +55,7 @@ const UpdateForm = ({ annonce, onClose, isOpen }) => {
       await authAPI.updateAnnonceById(annonce._id, updatedAnnonceData);
 
       onClose();
+      window.location.reload();
     } catch (error) {
       console.error('Error updating annonce:', error);
     }
