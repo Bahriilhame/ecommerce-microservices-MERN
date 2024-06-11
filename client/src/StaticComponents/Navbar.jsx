@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCartIcon, UserIcon, HeartIcon } from '@heroicons/react/outline';
+import authAPI from '../Services/auth';
 
 const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, fetchWishlist }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [annonces, setAnnonces] = useState([]);
+  const [filteredAnnonces, setFilteredAnnonces] = useState([]);
   const dropdownRef = useRef(null);
+  const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     const handleResize = () => {
@@ -13,7 +18,10 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
     };
 
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        (dropdownRef.current && !dropdownRef.current.contains(event.target)) ||
+        event.target.closest('.dropdown-item')
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -39,6 +47,32 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
       document.removeEventListener('keydown', handleEscape);
     };
   }, []);
+
+  useEffect(() => {
+    document.title = "Home";
+    const fetchAnnonces = async () => {
+      try {
+        const response = await authAPI.getAnnonces();
+        const activeAnnonces = response.data.filter(annonce => annonce.status === 'active' && annonce.id_vendeur !== user._id);
+        setAnnonces(activeAnnonces);
+        setFilteredAnnonces(activeAnnonces); // Initialize filtered annonces
+      } catch (error) {
+        console.error(error.response.data);
+      }
+    };
+    fetchAnnonces();
+  }, [user._id]);
+
+  useEffect(() => {
+    const results = annonces.filter(annonce =>
+      annonce.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredAnnonces(results);
+  }, [searchTerm, annonces]);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
   const totalAnnouncementsInCart = cart ? cart.annonces.length : 0;
   const totalAnnouncementsInWishlist = wishlist ? wishlist.annonces.length : 0;
@@ -67,23 +101,32 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
             </Link>
           </div>
           {isLargeScreen && (
-            <form action="/search" className="max-w-[480px] w-full px-4">
+            <form className="max-w-[480px] w-full px-4">
               <div className="relative">
-                <input type="text" name="q" className="w-full border h-12 p-4 rounded-full" placeholder="Search" />
-                <button type="submit">
-                  <svg
-                    className="text-[#14b8a6] h-5 w-5 absolute top-3.5 right-3 fill-current dark:text-teal-300"
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlnsXlink="http://www.w3.org/1999/xlink"
-                    version="1.1"
-                    viewBox="0 0 56.966 56.966"
-                    style={{ enableBackground: "new 0 0 56.966 56.966" }}
-                    xmlSpace="preserve"
-                  >
-                    <path
-                      d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255, 54.982, 56.293, 53.08, 55.146, 51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17 s-17-7.626-17-17S14.61,6,23.984,6z"></path>
-                  </svg>
-                </button>
+                <input
+                  type="text"
+                  name="q"
+                  className="w-full border h-12 p-4 rounded-full"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                />
+              {searchTerm && (
+                <div className="absolute left-0 right-0 top-full bg-white border mt-2 rounded shadow-lg">
+                  {filteredAnnonces.map((annonce) => (
+                    <Link
+                      key={annonce._id}
+                      to={`/annonces/${annonce._id}`}
+                      className="block p-2 hover:bg-gray-200 flex items-center"
+                      onClick={() => setIsDropdownOpen(false)} // Fermer le dropdown au clic
+                    >
+                      <img src={`http://localhost:8001/uploads/${annonce.image_name}`} alt={annonce.title} className="w-8 h-8 mr-2 rounded" />
+                      <span>{annonce.title}</span>
+                    </Link>
+                  ))}
+            </div>
+          )}
+
               </div>
             </form>
           )}
