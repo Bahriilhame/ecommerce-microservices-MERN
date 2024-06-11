@@ -5,11 +5,13 @@ import authAPI from '../Services/auth';
 
 const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, fetchWishlist }) => {
   const [isLargeScreen, setIsLargeScreen] = useState(true);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [annonces, setAnnonces] = useState([]);
   const [filteredAnnonces, setFilteredAnnonces] = useState([]);
-  const dropdownRef = useRef(null);
+  const profileDropdownRef = useRef(null);
+  const searchDropdownRef = useRef(null);
   const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
@@ -19,16 +21,21 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
 
     const handleClickOutside = (event) => {
       if (
-        (dropdownRef.current && !dropdownRef.current.contains(event.target)) ||
-        event.target.closest('.dropdown-item')
+        profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)
       ) {
-        setIsDropdownOpen(false);
+        setIsProfileDropdownOpen(false);
+      }
+      if (
+        searchDropdownRef.current && !searchDropdownRef.current.contains(event.target)
+      ) {
+        setIsSearchDropdownOpen(false);
       }
     };
 
     const handleEscape = (event) => {
       if (event.key === 'Escape') {
-        setIsDropdownOpen(false);
+        setIsProfileDropdownOpen(false);
+        setIsSearchDropdownOpen(false);
       }
     };
 
@@ -55,7 +62,7 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
         const response = await authAPI.getAnnonces();
         const activeAnnonces = response.data.filter(annonce => annonce.status === 'active' && annonce.id_vendeur !== user._id);
         setAnnonces(activeAnnonces);
-        setFilteredAnnonces(activeAnnonces); // Initialize filtered annonces
+        setFilteredAnnonces(activeAnnonces);
       } catch (error) {
         console.error(error.response.data);
       }
@@ -68,6 +75,7 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
       annonce.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredAnnonces(results);
+    setIsSearchDropdownOpen(!!results.length); 
   }, [searchTerm, annonces]);
 
   const handleSearch = (e) => {
@@ -79,7 +87,7 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
 
   const handleProfileClick = () => {
     localStorage.getItem('user')
-      ? setIsDropdownOpen(!isDropdownOpen)
+      ? setIsProfileDropdownOpen(!isProfileDropdownOpen)
       : window.location = 'http://127.0.0.1:5173/login';
   };
 
@@ -110,23 +118,23 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
                   placeholder="Search"
                   value={searchTerm}
                   onChange={handleSearch}
+                  onFocus={() => setIsSearchDropdownOpen(!!filteredAnnonces.length)}
                 />
-              {searchTerm && (
-                <div className="absolute left-0 right-0 top-full bg-white border mt-2 rounded shadow-lg">
-                  {filteredAnnonces.map((annonce) => (
-                    <Link
-                      key={annonce._id}
-                      to={`/annonces/${annonce._id}`}
-                      className="block p-2 hover:bg-gray-200 flex items-center"
-                      onClick={() => setIsDropdownOpen(false)} // Fermer le dropdown au clic
-                    >
-                      <img src={`http://localhost:8001/uploads/${annonce.image_name}`} alt={annonce.title} className="w-8 h-8 mr-2 rounded" />
-                      <span>{annonce.title}</span>
-                    </Link>
-                  ))}
-            </div>
-          )}
-
+                {isSearchDropdownOpen && (
+                  <div ref={searchDropdownRef} className="absolute left-0 right-0 top-full bg-white border mt-2 rounded shadow-lg">
+                    {filteredAnnonces.map((annonce) => (
+                      <Link
+                        key={annonce._id}
+                        to={`/annonces/${annonce._id}`}
+                        className="block p-2 hover:bg-gray-200 flex items-center"
+                        onClick={() => setIsSearchDropdownOpen(false)}
+                      >
+                        <img src={`http://localhost:8001/uploads/${annonce.image_name}`} alt={annonce.title} className="w-8 h-8 mr-2 rounded" />
+                        <span>{annonce.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             </form>
           )}
@@ -145,9 +153,9 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
               <button onClick={handleProfileClick} className="inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50">
                 <UserIcon className="h-6 w-6 text-gray-900" />
               </button>
-              {localStorage.getItem('user') && isDropdownOpen && (
-                <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
-                  <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100" onClick={() => setIsDropdownOpen(false)}>Profile</Link>
+              {localStorage.getItem('user') && isProfileDropdownOpen && (
+                <div ref={profileDropdownRef} className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100" onClick={() => setIsProfileDropdownOpen(false)}>Profile</Link>
                   <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</button>
                 </div>
               )}
@@ -160,4 +168,3 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
 };
 
 export default Navbar;
-
