@@ -13,6 +13,7 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
   const profileDropdownRef = useRef(null);
   const searchDropdownRef = useRef(null);
   const user = JSON.parse(localStorage.getItem('user'));
+  const change=JSON.parse(localStorage.getItem('user')) ? user._id : '' ;
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,26 +61,39 @@ const Navbar = ({ setIsCartOpen, cart, wishlist, setIsWishlistOpen, fetchCart, f
     const fetchAnnonces = async () => {
       try {
         const response = await authAPI.getAnnonces();
+        if (response && response.data) {
+          const annoncesData = response.data;
+          if (user) {
+            setAnnonces(annoncesData.filter(annonce => annonce.status === 'active' && annonce.id_vendeur !== user._id));
+          } else {
+            setAnnonces(annoncesData.filter(annonce => annonce.status === 'active'));
+          }
+        } else {
+          console.error('Invalid response:', response);
+        }
         const activeAnnonces = response.data.filter(annonce => annonce.status === 'active' && annonce.id_vendeur !== user._id);
-        setAnnonces(activeAnnonces);
-        setFilteredAnnonces(activeAnnonces);
+        user ? setFilteredAnnonces(activeAnnonces) : setFilteredAnnonces(response.data);
       } catch (error) {
         console.error(error.response.data);
       }
     };
     fetchAnnonces();
-  }, [user._id]);
-
-  useEffect(() => {
-    const results = annonces.filter(annonce =>
-      annonce.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredAnnonces(results);
-    setIsSearchDropdownOpen(!!results.length); 
-  }, [searchTerm, annonces]);
+  }, [change]);
 
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+    const term = e.target.value;
+    setSearchTerm(term);
+
+    if (term.trim() !== '') {
+      const results = annonces.filter(annonce =>
+        annonce.title.toLowerCase().includes(term.toLowerCase())
+      );
+      setFilteredAnnonces(results);
+      setIsSearchDropdownOpen(!!results.length);
+    } else {
+      setFilteredAnnonces([]);
+      setIsSearchDropdownOpen(false);
+    }
   };
 
   const totalAnnouncementsInCart = cart ? cart.annonces.length : 0;
