@@ -2,7 +2,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon, HeartIcon } from '@heroicons/react/solid';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import authAPI from '../../Services/auth';
 import Toast from '../../Services/Toast';
@@ -16,28 +16,40 @@ const AnnoncesPage = ({fetchCart,updateWishlistTotal}) => {
   const [showNotifwishlist, setShowNotifwishlist] = useState(false);
 
   const user = JSON.parse(localStorage.getItem('user'));
+  const change = user ? user._id : '';
 
   useEffect(() => {
     document.title = "Home";
     const fetchAnnonces = async () => {
       try {
         const response = await authAPI.getAnnonces();
-        setAnnonces(response.data.filter(annonce => annonce.status === 'active' && annonce.id_vendeur !== user._id));
+        if (response && response.data) {
+          const annoncesData = response.data;
+          if (user) {
+            setAnnonces(annoncesData.filter(annonce => annonce.status === 'active' && annonce.id_vendeur !== user._id));
+          } else {
+            setAnnonces(annoncesData.filter(annonce => annonce.status === 'active'));
+          }
+        } else {
+          console.error('Invalid response:', response);
+        }
       } catch (error) {
-        console.error(error.response.data);
+        console.error('Error fetching annonces:', error);
       }
     };
     fetchAnnonces();
-  }, [user._id]);
+  }, [change]);
 
-  const annoncesParCategorie = annonces.reduce((acc, annonce) => {
-    const categorie = annonce.id_categorie.name;
-    if (!acc[categorie]) {
-      acc[categorie] = [];
-    }
-    acc[categorie].push(annonce);
-    return acc;
-  }, {});
+  const annoncesParCategorie = useMemo(() => {
+    return annonces.reduce((acc, annonce) => {
+      const categorie = annonce.id_categorie.name;
+      if (!acc[categorie]) {
+        acc[categorie] = [];
+      }
+      acc[categorie].push(annonce);
+      return acc;
+    }, {});
+  }, [annonces]);
 
   const settings = {
     dots: true,
@@ -69,11 +81,15 @@ const AnnoncesPage = ({fetchCart,updateWishlistTotal}) => {
   };
 
   const goToNext = (categorie) => {
-    slidersRef.current[categorie].slickNext();
+    if (slidersRef.current[categorie]) {
+      slidersRef.current[categorie].slickNext();
+    }
   };
 
   const goToPrev = (categorie) => {
-    slidersRef.current[categorie].slickPrev();
+    if (slidersRef.current[categorie]) {
+      slidersRef.current[categorie].slickPrev();
+    }
   };
 
   const addToCart = async (event, annonceId) => {
@@ -85,7 +101,7 @@ const AnnoncesPage = ({fetchCart,updateWishlistTotal}) => {
       fetchCart();
     } catch (error) {
       console.error(error.response.data);
-      alert('Une erreur s\'est produite lors de l\'ajout au panier.');
+      user && alert('Une erreur s\'est produite lors de l\'ajout au panier.');
     }
     setLoadingCart((prevStates) => ({ ...prevStates, [annonceId]: false }));
   };
@@ -99,7 +115,7 @@ const AnnoncesPage = ({fetchCart,updateWishlistTotal}) => {
       updateWishlistTotal();
     } catch (error) {
       console.error(error.response.data);
-      alert('Annonce déjà existante dans le wishlist');
+      user && alert('Annonce déjà existante dans le wishlist');
     }
     setLoadingWishlist((prevStates) => ({ ...prevStates, [annonceId]: false }));
   };
